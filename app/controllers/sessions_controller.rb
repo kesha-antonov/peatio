@@ -1,21 +1,32 @@
 class SessionsController < ApplicationController
+  skip_before_action :verify_authenticity_token, only: [:create]
   before_action :auth_member!, only: :destroy
-  before_action :auth_anybody!, only: :failure
+  before_action :auth_anybody!, only: %i[ new failure ]
+
+  def new
+    @identity = Identity.new
+  end
 
   def create
     @member = Member.from_auth(auth_hash)
 
-    return redirect_on_unsuccessful_sign_in unless @member
-    return redirect_to(root_path, alert: t('.disabled')) if @member.disabled?
-
-    reset_session rescue nil
-    session[:member_id] = @member.id
-    save_session_key @member.id, cookies['_peatio_session']
-    redirect_on_successful_sign_in
+    if @member
+      if @member.disabled?
+        redirect_to signin_path, alert: t('.disabled')
+      else
+        reset_session rescue nil
+        session[:member_id] = @member.id
+        save_session_key @member.id, cookies['_peatio_session']
+        MemberMailer.notify_signin(@member.id).deliver if @member.activated?
+        redirect_on_successful_sign_in
+      end
+    else
+      redirect_on_unsuccessful_sign_in
+    end
   end
 
   def failure
-    redirect_to root_path, alert: t('.error')
+    redirect_to signin_path, alert: t('.error')
   end
 
   def destroy
@@ -27,6 +38,7 @@ class SessionsController < ApplicationController
 private
 
   def auth_hash
+    raise
     @auth_hash ||= request.env['omniauth.auth']
   end
 
@@ -45,6 +57,6 @@ private
   end
 
   def redirect_on_unsuccessful_sign_in
-    redirect_to root_path, alert: t('.error')
+    redirect_to signin_path, alert: t('.error')
   end
 end

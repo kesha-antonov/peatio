@@ -19,12 +19,22 @@ Peatio::Application.routes.draw do
 
   root 'welcome#index'
 
+  get '/signin' => 'sessions#new', :as => :signin
+  get '/signup' => 'identities#new', :as => :signup
   get '/signout' => 'sessions#destroy', :as => :signout
   get '/auth/failure' => 'sessions#failure', :as => :failure
   match '/auth/:provider/callback' => 'sessions#create', via: [:get, :post]
 
   get '/documents/api_v2'
   get '/documents/websocket_api'
+
+  resource :member, :only => [:edit, :update]
+  resource :identity, :only => [:edit, :update]
+
+  namespace :authentications do
+    resources :emails, only: [:new, :create]
+    resources :identities, only: [:new, :create]
+  end
 
   scope module: :private do
     resources :settings, only: [:index]

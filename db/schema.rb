@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180215144645) do
+ActiveRecord::Schema.define(version: 20180226094215) do
 
   create_table "account_versions", force: :cascade do |t|
     t.integer  "member_id",       limit: 4
@@ -123,6 +123,18 @@ ActiveRecord::Schema.define(version: 20180215144645) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
+  end
+
+  create_table "identities", force: :cascade do |t|
+    t.string   "email",           limit: 255
+    t.string   "password_digest", limit: 255
+    t.boolean  "is_active"
+    t.integer  "retry_count",     limit: 4
+    t.boolean  "is_locked"
+    t.datetime "locked_at"
+    t.datetime "last_verify_at"
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
   end
 
   create_table "members", force: :cascade do |t|

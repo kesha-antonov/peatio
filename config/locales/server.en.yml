@@ -1414,7 +1414,9 @@ en:
     admin: Admin Panel
     market: Trade
     settings: Profile
+    signin: Sign In
     signout: Exit
+    signup: Sign Up
     funds: Funds
     getstart: Markets
     assets: Solvency

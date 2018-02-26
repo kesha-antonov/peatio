@@ -48,3 +48,5 @@ tags
 .DS_Store
 .agignore
 **/*.tgz
+
+/dump.rdb

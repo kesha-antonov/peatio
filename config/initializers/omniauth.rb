@@ -1,4 +1,6 @@
 Rails.application.config.middleware.use OmniAuth::Builder do
+  provider :identity, fields: [:email], on_failed_registration: IdentitiesController.action(:new)
+
   case ENV['OAUTH2_SIGN_IN_PROVIDER']
     when 'auth0'
       provider :auth0,
@@ -25,3 +27,17 @@ OmniAuth.config.on_failure = lambda do |env|
 end
 
 OmniAuth.config.logger = Rails.logger
+
+module OmniAuth
+  module Strategies
+   class Identity
+     def request_phase
+       redirect '/signin'
+     end
+
+     def registration_form
+       redirect '/signup'
+     end
+   end
+ end
+end

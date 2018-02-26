@@ -22,12 +22,24 @@
 
   <div class="row" id="getstart">
     <% unless current_user %>
-      <div class="col-xs-6 col-xs-offset-9 text-center">
+      <% offset = 5 %>
+      <% offset -= 2 if ENV['GOOGLE_OAUTH2_SIGN_IN'] %>
+      <% offset -= 2 if ENV['AUTH0_OAUTH2_SIGN_IN'] %>
+
+      <div class="col-xs-4 col-xs-offset-<%= offset %>">
+        <%= link_to t('header.signin'), signin_path, class: %w(btn btn-primary btn-lg btn-block), html: { role: 'button' } %>
+      </div>
+
+      <div class="col-xs-6 col-xs-offset-0 text-center">
         <% # Output button for enabled OAuth2 provider. %>
         <% provider = ENV['OAUTH2_SIGN_IN_PROVIDER'] %>
         <% unless provider.blank? %>
           <a class="btn btn-primary btn-lg btn-block" href="/auth/<%= provider == 'google' ? 'google_oauth2' : provider %>" role="button"><%= t("header.sign_in_with_#{provider}") %></a>
         <% end %>
+      </div>
+
+      <div class="col-xs-4">
+        <a class="btn btn-primary btn-lg btn-block" href="<%= signup_path %>" role="button"><%= t('header.signup') %></a>
       </div>
     <% else %>
       <div class="col-xs-6 col-xs-offset-9 text-center">
